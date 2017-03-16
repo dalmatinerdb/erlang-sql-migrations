@@ -17,13 +17,13 @@ migrations(App) ->
                                     proplists:get_value(behavior, M:module_info(attributes), [])) ],
     lists:usort(Migrations).
 
-migrate(Conn, Version, Migrations) ->
+migrate(Pool, Version, Migrations) ->
     BinVersion = atom_to_binary(Version, latin1),
-    case pgsql:squery(Conn, "SELECT id FROM migrations ORDER BY id DESC") of
+    case pgapp:squery(Pool, "SELECT id FROM migrations ORDER BY id DESC") of
         {error,{error,error,<<"42P01">>,_,_}} ->
             %% init migrations and restart
-            init_migrations(Conn),
-            migrate(Conn, Version, Migrations);
+            init_migrations(Pool),
+            migrate(Pool, Version, Migrations);
         {ok, _, [{BinVersion}|_]} ->
             up_to_date;
         {ok, _, [{Top}|_]} when Top < BinVersion ->
@@ -31,8 +31,8 @@ migrate(Conn, Version, Migrations) ->
             TopAtom = binary_to_atom(Top, latin1),
             Upgrade = lists:dropwhile(fun (V) -> V =< TopAtom end, Migrations),
             [ begin 
-                  M:upgrade(Conn),
-                  pgsql:equery(Conn,
+                  M:upgrade(Pool),
+                  pgapp:equery(Pool,
                                "INSERT INTO migrations (id) "
                                "VALUES ($1)", [atom_to_binary(M, latin1)])
               end || M <- Upgrade ],
@@ -42,8 +42,8 @@ migrate(Conn, Version, Migrations) ->
             TopAtom = binary_to_atom(Top, latin1),
             Downgrade = lists:takewhile(fun (V) -> V >= TopAtom end, lists:reverse(Migrations)),
             [ begin 
-                  M:downgrade(Conn),
-                  pgsql:equery(Conn,
+                  M:downgrade(Pool),
+                  pgapp:equery(Pool,
                                "DELETE FROM migrations WHERE id = $1",
                                [atom_to_binary(M, latin1)])
               end || M <- Downgrade ],
@@ -52,8 +52,8 @@ migrate(Conn, Version, Migrations) ->
             %% full upgrade path
             Upgrade = Migrations,
             [ begin 
-                  M:upgrade(Conn),
-                  pgsql:equery(Conn,
+                  M:upgrade(Pool),
+                  pgapp:equery(Pool,
                                "INSERT INTO migrations (id) "
                                "VALUES ($1)", [atom_to_binary(M, latin1)])
               end || M <- Upgrade ],
@@ -62,8 +62,8 @@ migrate(Conn, Version, Migrations) ->
 
 
 %% Private
-init_migrations(Conn) ->
-    {ok, _, _} = pgsql:squery(Conn,
+init_migrations(Pool) ->
+    {ok, _, _} = pgapp:squery(Pool,
                               "CREATE TABLE migrations ("
                               "id VARCHAR(255) PRIMARY KEY,"
                               "datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
