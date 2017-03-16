@@ -14,7 +14,7 @@ migrations(App) ->
     {ok, Ms} = application:get_key(App, modules),
     Migrations = [ M || M <- Ms,
                        lists:member(sql_migration,
-                                    proplists:get_value(behaviour, M:module_info(attributes), [])) ],
+                                    proplists:get_value(behavior, M:module_info(attributes), [])) ],
     lists:usort(Migrations).
 
 migrate(Conn, Version, Migrations) ->
