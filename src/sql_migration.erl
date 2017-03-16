@@ -20,7 +20,7 @@ migrations(App) ->
 migrate(Pool, Version, Migrations) ->
     BinVersion = atom_to_binary(Version, latin1),
     case pgapp:squery(Pool, "SELECT id FROM migrations ORDER BY id DESC") of
-        {error,{error,error,<<"42P01">>,_,_}} ->
+        {error,{error,error,<<"42P01">>,_,_,_}} ->
             %% init migrations and restart
             init_migrations(Pool),
             migrate(Pool, Version, Migrations);
