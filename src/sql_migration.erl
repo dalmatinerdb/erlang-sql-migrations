@@ -60,18 +60,21 @@ migrate(Pool, Version, Migrations) ->
 
 %% Private
 upgrade(Migration, Pool) ->
+    lager:info("[MIGRATION:~s] Running: ~s", [Pool, Migration]),
     Migration:upgrade(Pool),
     pgapp:equery(Pool,
                  "INSERT INTO migrations (id) "
                  "VALUES ($1)", [atom_to_binary(Migration, latin1)]).
 
 downgrade(Migration, Pool) ->
+    lager:info("[MIGRATION:~s] Rolling back: ~s", [Pool, Migration]),
     Migration:downgrade(Pool),
     pgapp:equery(Pool,
                  "DELETE FROM migrations WHERE id = $1",
                  [atom_to_binary(Migration, latin1)]).
 
 init_migrations(Pool) ->
+    lager:info("[MIGRATION:~s] Initializing migrations table.", [Pool]),
     {ok, _, _} = pgapp:squery(
                    Pool,
                    "CREATE TABLE migrations ("
