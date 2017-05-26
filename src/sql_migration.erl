@@ -1,10 +1,27 @@
 -module(sql_migration).
 
--export([migrations/1, migrate/3]).
+-export([
+         run/1,
+         run/2,
+         migrations/1,
+         migrate/3
+        ]).
 
 
 -callback upgrade(Pool :: atom()) -> any().
 -callback downgrade(Pool :: atom()) -> any().
+
+run(App) ->
+    Pool = applicaiton:get_env(sqlmig, pool, epgsql_pool),
+    run(App, Pool).
+
+run(App, Pool) ->
+    case migrations(App) of
+        [] ->
+            ok;
+        [Version | Migrations] ->
+            migrate(Pool, Version, Migrations)
+    end.
 
 migrations(App) ->
     {ok, Ms} = application:get_key(App, modules),

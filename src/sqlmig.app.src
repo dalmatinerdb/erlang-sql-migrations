@@ -11,6 +11,9 @@
                  ]},
   {env, [{pool, epgsql_pool}]},
   {maintainers,["Heinz N. Gies"]},
-  {licenses,["MIT"]},
-  {links,[{"github",
+  {licenses,["PROBABY-MIT"]},
+  {links,[
+          {"upstream",
+           "https://github.com/spawngrid/erlang-sql-migrations"},
+          {"github",
            "https://github.com/dalmatinerdb/erlang-sql-migrations"}]}]}.
