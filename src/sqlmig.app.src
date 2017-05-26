@@ -5,7 +5,12 @@
   {registered, []},
   {applications, [
                   kernel,
-                  stdlib
+                  stdlib,
+                  lager,
+                  pgapp
                  ]},
-  {env, []}
- ]}.
+  {env, [{pool, epgsql_pool}]},
+  {maintainers,["Heinz N. Gies"]},
+  {licenses,["MIT"]},
+  {links,[{"github",
+           "https://github.com/dalmatinerdb/erlang-sql-migrations"}]}]}.
