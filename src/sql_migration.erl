@@ -85,4 +85,4 @@ init_migrations(Pool) ->
 
 is_migration(M) ->
     lists:member(sql_migration,
-                 proplists:get_value(behavior, M:module_info(attributes), [])).
+                 proplists:get_value(behaviour, M:module_info(attributes), [])).
