@@ -19,7 +19,8 @@ run(App, Pool) ->
     case migrations(App) of
         [] ->
             ok;
-        [Version | Migrations] ->
+        Migrations ->
+            Version = lists:last(Migrations), Migrations),
             migrate(Pool, Version, Migrations)
     end.
 
