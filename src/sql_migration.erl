@@ -20,7 +20,7 @@ run(App, Pool) ->
         [] ->
             ok;
         Migrations ->
-            Version = lists:last(Migrations), Migrations),
+            Version = lists:last(Migrations),
             migrate(Pool, Version, Migrations)
     end.
 
