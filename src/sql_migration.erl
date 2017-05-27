@@ -12,7 +12,7 @@
 -callback downgrade(Pool :: atom()) -> any().
 
 run(App) ->
-    Pool = applicaiton:get_env(sqlmig, pool, epgsql_pool),
+    Pool = application:get_env(sqlmig, pool, epgsql_pool),
     run(App, Pool).
 
 run(App, Pool) ->
