@@ -4,12 +4,20 @@
          run/1,
          run/2,
          migrations/1,
-         migrate/3
+         migrate/3,
+         file/1
         ]).
 
 
 -callback upgrade(Pool :: atom()) -> any().
 -callback downgrade(Pool :: atom()) -> any().
+
+
+file(Name) ->
+    T = calendar:datetime_to_gregorian_seconds(
+          calendar:now_to_universal_time(erlang:timestamp())) -
+        calendar:datetime_to_gregorian_seconds( {{1970,1,1},{0,0,0}}),
+    io:format("priv/schema/~p_~s.erl\n", [T, Name]).
 
 run(App) ->
     Pool = application:get_env(sqlmig, pool, epgsql_pool),
